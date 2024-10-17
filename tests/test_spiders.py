@@ -132,6 +132,7 @@ def test_spider_crawl(spider: Spider):
         "scrapy_scraped_at",
         "title",
         "url",
+        "paywall",
     }
 
     assert output_cols == required_cols
