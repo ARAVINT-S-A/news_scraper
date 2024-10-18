@@ -29,15 +29,12 @@ class NDTVProfitSpider(SitemapIndexSpider):
         article.add_xpath(
             "article_text", '//div[contains(@class,"story-element")]/div/p/text()'
         )
-        '''
-        Check for paywall status in articles.
         
-        If an article requires a paywall, we set `paywall` as a string ("True" or "False") 
-        to avoid errors with `str.strip` in the ItemLoader.
-        '''
+        #`paywall` as a string to avoid errors with `str.strip` in the ItemLoader.
         paywall = "False"
         hard_paywall_check = response.xpath('//span[contains(@class, "hard-paywall-m__title__U-0EK")]/text()').get()
-        if hard_paywall_check and "To continue reading this story" in hard_paywall_check:
+        paywall_message="To continue reading this story"
+        if hard_paywall_check and paywall_message in hard_paywall_check:
             paywall = "True"
 
         article.add_value("paywall", paywall)

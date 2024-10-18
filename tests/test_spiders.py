@@ -121,7 +121,18 @@ def test_spider_crawl(spider: Spider):
         pytest.skip(f"No data scraped by {spider.name}, file {output_file} is empty.")
     df = pd.read_csv(output_file)
 
-    output_cols = set(df.columns)
+    df['paywall'] = df['paywall'].astype(str).str.strip() 
+    if spider.name in ["economictimes", "ndtvprofit"]:
+        df_filtered = df[(df["paywall"] == "False")]
+        if df_filtered.empty:
+            pytest.skip(f"No valid articles scraped by {spider.name} after filtering paywall articles.")
+        df_filtered.to_csv(output_file, index=False)
+        df_to_check = df_filtered
+    else:
+        # For all other spiders, use the normal DataFrame
+        df_to_check = df
+
+    output_cols = set(df_to_check.columns)
     required_cols = {
         "article_text",
         "author",
@@ -200,5 +211,8 @@ def test_spider_parse(url, snapshot):
 
         if "article_text" in i:
             i["article_text"] = normalize_text(i["article_text"])
+        # Assert that if paywall is "False", article_text should not be empty
+        if i.get("paywall") == "False":
+            assert i["article_text"], f"article_text is empty for {i['url']} with paywall False"
 
     snapshot.assert_match(parsed_json)

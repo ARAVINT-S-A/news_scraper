@@ -25,8 +25,9 @@ class CnbcTv18Spider(SitemapIndexSpider):
         article.add_xpath(
             "author", "//div[contains(@class, 'narticle-author')]//span[contains(@class, 'nauthor-name')]/span[contains(@class, 'jsx-61453e8285f2673c')]//text()"
         )
+        #'content' and 'live_feed_row' is added to handle livefeed articles
         article.add_xpath(
-            "article_text", "//div[contains(@class, 'narticle-data')]//div[contains(@class, 'articleWrap')]//text()"
+            "article_text", "//div[contains(@class, 'narticle-data')]//div[contains(@class, 'articleWrap')]//text() | //div[contains(@class, 'status-timeline-content')]//div[contains(@class, 'content')]//text() |//div[contains(@class, 'live_feed_row')]//text()"
         )
         
         # Dates

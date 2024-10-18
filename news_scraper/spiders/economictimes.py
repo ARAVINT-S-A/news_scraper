@@ -36,15 +36,12 @@ class EconomicTimesSpider(SitemapIndexSpider):
             "article_text",
             '//div[@class="artText"]/text() | //div[@class="artText"]/a/text()',
         )
-        '''
-        Check for paywall status in articles.
-        
-        If an article requires a paywall, we set `paywall` as a string ("True" or "False") 
-        to avoid errors with `str.strip` in the ItemLoader.
-        '''
+
+        #`paywall` as a string to avoid errors with `str.strip` in the ItemLoader.
         paywall = "False"
-        paywall_message = response.xpath('//h3[@class="paywall_msg"]/@data-free').get()
-        if paywall_message and "You are reading ETPrime's exclusive investment ideas" in paywall_message:
+        paywall_element = response.xpath('//h3[@class="paywall_msg"]/@data-free').get()
+        paywall_message="You are reading ETPrime's exclusive investment ideas"
+        if paywall_element and (paywall_message in paywall_element):
             paywall = "True"
 
         article.add_value("paywall", paywall)

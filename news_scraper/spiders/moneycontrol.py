@@ -27,8 +27,23 @@ class MoneyControlSpider(SitemapIndexSpider):
         article.add_css("title", "h1::text")
         article.add_css("description", "h2.article_desc::text")
         article.add_xpath("author", '//div[@class="article_author"]//text()')
-        article.add_xpath("article_text", '//div[@id="contentdata"]/p/text()')
+        article.add_xpath(
+            "article_text",
+            '//div[@id="contentdata"]/p/text()'
+            #handling livefeed articles
+            # '//ul[@class="liveblog_list live-blog liveBlogListInfo"]//li[@class="blog-commmand"]/div/h3[@class="Blue_text"]//text() | '
+            # '//ul[@class="liveblog_list live-blog liveBlogListInfo"]//li[@class="blog-commmand"]/div/div[@itemprop="articleBody"]//text()'
+        )
 
+        paywall = "False"
+        paywall_element = response.xpath('//div[@class="sub_prosection proRequest"]').get()
+        paywall_message = "Unlock this article at ₹1"
+        if paywall_element and (paywall_message in paywall_element):
+            paywall = "True"
+
+        article.add_value("paywall", paywall)
+
+        
         # dates
         article.add_css(
             "date_published",
